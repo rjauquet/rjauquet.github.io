@@ -24,7 +24,9 @@ body {
     background-color: rgba(51,51,51,1);
 }
 .icon{
-    width: 125px;
-    height: 125px;
+    max-width:100% !important;
+    width: 25%;
+    height: auto;
+    display: block;
     padding: 50px 25px 25px 25px;
 }
