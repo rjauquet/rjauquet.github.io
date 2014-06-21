@@ -1,3 +1,44 @@
+#toggle-shown{
+    width: 10px;
+    height: 50px;
+    background-color: rgba(51,51,51,1);
+}
+
+.toggle-show {
+    position: absolute;
+    left: 37%;
+    top: 50%;
+}
+
+.toggle-hide {
+    position: absolute;
+    left: 0%;
+    top: 50%;
+}
+
+
+#style{
+    position: relative;
+    width: 30%;
+    height: 70%;
+    top: 15%;
+    left: 30%;
+    background-color: rgba(94,94,94,1);
+}
+
+.slider {
+    overflow-y: hidden;
+    max-height: 500px; /* approximate max height */
+
+    transition-property: all;
+    transition-duration: .5s;
+    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+
+.slider.closed {
+    max-height: 0;
+}
+
 @media (max-width: 600px) {
     body {
         background-color: rgba(189,70,53,1);
@@ -41,6 +82,7 @@
     #container{
         margin-left: 20px;
     }
+
 }
 
 @media (min-width: 600px) {
