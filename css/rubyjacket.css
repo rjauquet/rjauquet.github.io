@@ -1,0 +1,30 @@
+body {
+    background-color: rgba(189,70,53,1);
+}
+#title{
+    color: rgba(94,94,94,1);
+    font-size:300%;
+    margin: 15px auto;
+}
+#navigation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin:100px 0 0 0;
+    width: 40%;
+    height: 100%;
+    background-color: rgba(94,94,94,1);
+}
+#header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: rgba(51,51,51,1);
+}
+.icon{
+    width: 125px;
+    height: 125px;
+    padding: 50px 25px 25px 25px;
+}
