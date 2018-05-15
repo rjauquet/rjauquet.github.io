@@ -1,16 +1,48 @@
 html *
 {
    font-family: lato !important;
+   background: rgba(44, 44, 44, 0.75);
+}
+body {
+	margin: 0px 0px 0px 0px;
 }
 a:link {
-	color: rgba(0,0,0,.75);
+	color: rgba(0, 0, 0, 0.75);
 	text-decoration: none;
 }
 a:hover {
-	color: rgba(0,0,0,.5);
+	color: rgba(0, 0, 0, 0.5);
 	text-decoration: none;
 }
 a:visited {
-	color: rgba(0,0,100,.3);
+	color: rgba(0, 0, 100, 0.3);
 	text-decoration: none;
+}
+
+.header {
+	position: fixed;
+  	top: 0;
+  	width: 100%;
+	color: rgb(164, 255, 152);
+	background: none;
+}
+
+.header h1 {
+	position: relative;
+	display: inline-block;
+	padding-left: 20%;
+	background: none;
+}
+
+.subheader {
+	position: relative;
+	display: inline-block;
+	color: rgb(177, 177, 177);
+	background: none;
+	padding-left: 5px;
+}
+
+.content {
+	padding-left: 30%;
+	padding-right: 30%;
 }
