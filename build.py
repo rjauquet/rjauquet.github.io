@@ -4,7 +4,7 @@ CONTENT_KEY = '{{content}}'
 TEMPLATE_FILE = './pages/base.html'
 BUILD_DIR = './build/'
 CONTENT_DIR = './pages/content/'
-INDEX_FILE = './index.html'
+INDEX_DIR = './'
 
 def main():
     with open(TEMPLATE_FILE) as template_file:
@@ -28,7 +28,8 @@ def main():
         with open(f'{CONTENT_DIR}{page}') as content_file:
             contents = content_file.readlines()
 
-        with open(f'{BUILD_DIR}{page}', 'w') as output_file:
+        output_path = f'{INDEX_DIR}{page}' if page == 'index.html' else f'{BUILD_DIR}{page}'
+        with open(output_path, 'w') as output_file:
             # copy the template and insert new content
             output_file.writelines(
                 template[:content_index] + contents + template[content_index+1:]
