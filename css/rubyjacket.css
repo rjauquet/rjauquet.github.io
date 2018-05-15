@@ -1,30 +1,32 @@
 html *
 {
    font-family: lato !important;
-   background: rgba(44, 44, 44, 0.75);
 }
 body {
 	margin: 0px 0px 0px 0px;
+	background: rgb(44, 44, 44);
 }
 a:link {
-	color: rgba(0, 0, 0, 0.75);
+	color: rgb(177, 177, 177);
 	text-decoration: none;
 }
 a:hover {
-	color: rgba(0, 0, 0, 0.5);
+	color: rgb(164, 255, 152);
 	text-decoration: none;
 }
 a:visited {
-	color: rgba(0, 0, 100, 0.3);
+	color: rgb(234, 255, 231);
 	text-decoration: none;
 }
 
 .header {
 	position: fixed;
   	top: 0;
-  	width: 100%;
+	width: 100%;
+	height: 60px;
 	color: rgb(164, 255, 152);
-	background: none;
+	background: rgba(44, 44, 44, 0.75);
+	z-index: 999;
 }
 
 .header h1 {
@@ -42,7 +44,22 @@ a:visited {
 	padding-left: 5px;
 }
 
+.nav {
+	position: relative;
+	display: inline-block;
+	padding-left: 5px;
+}
+
+.nav li {
+	display: inline;
+	padding-left: 4px;
+}
+
 .content {
-	padding-left: 30%;
-	padding-right: 30%;
+	z-index: 99;
+	color: rgb(234, 255, 231);
+	padding-left: 20%;
+	padding-right: 20%;
+	margin: 70px auto;
+	overflow-y: scroll;
 }
