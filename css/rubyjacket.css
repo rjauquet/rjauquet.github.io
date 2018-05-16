@@ -6,17 +6,20 @@ body {
 	margin: 0px 0px 0px 0px;
 	background: rgb(44, 44, 44);
 }
-a:link {
-	color: rgb(177, 177, 177);
+a {
 	text-decoration: none;
+}
+a:link {
+	color: rgb(164, 255, 152);
 }
 a:hover {
-	color: rgb(164, 255, 152);
-	text-decoration: none;
+	color: rgb(255, 173, 106);
 }
 a:visited {
-	color: rgb(234, 255, 231);
-	text-decoration: none;
+	color: rgb(164, 255, 152);
+}
+a:visited:hover {
+	color: rgb(255, 173, 106);
 }
 
 .header {
@@ -98,4 +101,9 @@ a:visited {
 	.nav ul {
 		padding: 0;
 	}
+}
+
+.me {
+	width: 250px;
+	height: 100%;
 }
