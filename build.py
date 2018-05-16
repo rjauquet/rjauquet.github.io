@@ -1,9 +1,9 @@
 import os
 
 CONTENT_KEY = '{{content}}'
-TEMPLATE_FILE = './pages/base.html'
+TEMPLATE_FILE = './content/base.html'
 BUILD_DIR = './build/'
-CONTENT_DIR = './pages/content/'
+CONTENT_DIR = './content/pages/'
 INDEX_DIR = './'
 
 def main():
