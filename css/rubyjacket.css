@@ -1,6 +1,7 @@
 html *
 {
    font-family: lato !important;
+   font-size: 24px;
 }
 body {
 	margin: 0px 0px 0px 0px;
@@ -20,6 +21,12 @@ a:visited {
 }
 a:visited:hover {
 	color: rgb(255, 173, 106);
+}
+h1 {
+	font-size: 40px;
+}
+h2 {
+	font-size: 32px;
 }
 
 .header {
