@@ -1,7 +1,7 @@
 html *
 {
    font-family: lato !important;
-   font-size: 24px;
+   font-size: 19px;
 }
 body {
 	margin: 0px 0px 0px 0px;
@@ -24,9 +24,21 @@ a:visited:hover {
 }
 h1 {
 	font-size: 40px;
+	color: rgb(255, 173, 106);
 }
 h2 {
 	font-size: 32px;
+}
+
+pre code {
+	background: rgb(31, 31, 31);
+	color: rgb(255, 255, 255);
+	display: block;
+	padding: 20px;
+	overflow: auto;
+	margin-left: auto;
+    margin-right: auto;
+	width: 70%;
 }
 
 .header {
@@ -45,6 +57,7 @@ h2 {
 	padding-left: 20%;
 	padding-top: 30px;
 	background: none;
+	color: rgb(164, 255, 152);
 	margin: 0;
 }
 
@@ -70,8 +83,8 @@ h2 {
 .content {
 	z-index: 99;
 	color: rgb(234, 255, 231);
-	padding-left: 33%;
-	padding-right: 33%;
+	padding-left: 27%;
+	padding-right: 27%;
 	margin: 110px auto;
 	overflow-y: scroll;
 }
@@ -122,4 +135,42 @@ h2 {
 .date {
 	color: rgb(255, 140, 184);
 	float: right;
+}
+
+/*
+** Adapted from:
+** https://github.com/google/code-prettify/blob/453bd5f51e61245339b738b1bbdd42d7848722ba/styles/desert.css
+*/
+pre.prettyprint { display: block; background-color: #333 }
+pre .nocode { background-color: none; color: #000 }
+pre .str { color: rgb(255, 140, 184); }
+pre .kwd { color: rgb(165, 165, 165); font-weight: bold }
+pre .com { color: #87ceeb }
+pre .typ { color: #98fb98 }
+pre .lit { color: #cd5c5c }
+pre .pun { color: rgb(234, 255, 231) }
+pre .pln { color: rgb(234, 255, 231) }
+pre .tag { color: rgb(255, 152, 233); font-weight: bold }
+pre .atn { color: #bdb76b; font-weight: bold }
+pre .atv { color: rgb(255, 140, 184); }
+pre .dec { color: #98fb98 }
+
+/* Specify class=linenums on a pre to get line numbering */
+ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE } /* IE indents via margin-left */
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
+/* Alternate shading for lines */
+li.L1,li.L3,li.L5,li.L7,li.L9 { }
+
+@media print {
+  pre.prettyprint { background-color: none }
+  pre .str, code .str { color: #060 }
+  pre .kwd, code .kwd { color: #006; font-weight: bold }
+  pre .com, code .com { color: #600; font-style: italic }
+  pre .typ, code .typ { color: #404; font-weight: bold }
+  pre .lit, code .lit { color: #044 }
+  pre .pun, code .pun { color: #440 }
+  pre .pln, code .pln { color: #000 }
+  pre .tag, code .tag { color: #006; font-weight: bold }
+  pre .atn, code .atn { color: #404 }
+  pre .atv, code .atv { color: #060 }
 }

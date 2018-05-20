@@ -1,3 +1,59 @@
 <h1>Full Text Search in PostgreSQL is Good Enough</h3>
 
-Exploring FTS with Django and PSQL
+Searching text is non-trivial, but for most use cases we can get 80% of the way there with a little Django + PostgreSQL magic. Our goal is to enable accurate and fast full text searching without setting up any new packages/databases/services/headaches besides our existing Django project with an existing PostgresQL database.
+
+<br/><br/>
+
+We're going to design a simple blog. First, a model:
+
+<pre>
+    <code class="prettyprint lang-py">
+        from django.db import models
+
+        class Blog(models.Model):
+
+            title = models.TextField()
+            text = models.TextField()
+
+            author = models.ForeignKey('User')
+    </code>
+</pre>
+
+Each blog post is stored in our Blog model with its title, text, and author. We don't need to worry about the User model.
+
+<br/><br/>
+
+Likely, you've already got a model with some text fields like the Blog model above. We're going to do a few things now:
+
+<ul>
+    <li>Add fields to store vectorized versions of title and text</li>
+    <li>Enable indexing on our vectorized fields</li>
+    <li>Generate a new migration file</li>
+    <li>and add a trigger to automatically populate our vector fields</li>
+</ul>
+
+<h2>Add Vector Fields</h2>
+
+We're going to keep our title and text vectors separate to enable searching through one or both of the fields. It is also possible to vectorize multiple fields into one vector field if you know you're only ever going to search through everything.
+
+<br/><br/>
+
+Our new model looks like this:
+
+<pre>
+    <code class="prettyprint lang-py">
+        from django.contrib.postgres.search import SearchVectorField
+        from django.db import models
+
+        class Blog(models.Model):
+
+            title = models.TextField()
+            text = models.TextField()
+
+            author = models.ForeignKey('User')
+
+            title_vector = SearchVectorField(null=True)
+            text_vector = SearchVectorField(null=True)
+    </code>
+</pre>
+
