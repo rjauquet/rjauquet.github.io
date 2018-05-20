@@ -44,7 +44,7 @@ Each blog post is stored in our Blog model with its title and text. Likely, you'
     <li>Add fields to store vectorized versions of title and text</li>
     <li>Enable indexing on our vectorized fields</li>
     <li>Generate a new migration file</li>
-    <li>and add a trigger to automatically populate our vector fields</li>
+    <li>Add a trigger to automatically populate our vector fields</li>
 </ul>
 
 <h2>Add Vector Fields</h2>
@@ -106,6 +106,121 @@ With the GinIndex in place, we have everything setup on the model that we will n
 
 <h2>Generate a New Migration</h2>
 
+<b>The next two parts assume you have a django project, you have an app called search containing your Blog model, and the search app is in your INSTALLED_APPS.</b>
+
+<br/><br/>
+
+Now that we've made our changes, we can make our migration file. My ins and outs look something like this:
+
+<pre>
+    <code class="prettyprint lang-sh">
+        rjauquet (master) → python manage.py makemigrations search
+        Migrations for 'search':
+            examples/search/migrations/0001_initial.py
+            - Create model Blog
+            - Create index search_blog_text_ve_fb62bc_gin on field(s) text_vector, title_vector of model blog
+    </code>
+</pre>
+
+I am starting with a fresh Blog model so all of the fields were added in the first step, and the indexes were added in the second. Before doing anything else, let's take a look at the generated migration file:
+
+<pre>
+    <code class="prettyprint lang-py">
+        import django.contrib.postgres.indexes
+        import django.contrib.postgres.search
+        from django.db import migrations, models
+
+        class Migration(migrations.Migration):
+
+            initial = True
+
+            dependencies = []
+
+            operations = [
+                migrations.CreateModel(
+                    name='Blog',
+                    fields=[
+                        ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                        ('title', models.TextField()),
+                        ('text', models.TextField()),
+                        ('title_vector', django.contrib.postgres.search.SearchVectorField(null=True)),
+                        ('text_vector', django.contrib.postgres.search.SearchVectorField(null=True)),
+                    ],
+                ),
+                migrations.AddIndex(
+                    model_name='blog',
+                    index=django.contrib.postgres.indexes.GinIndex(fields=['text_vector', 'title_vector'], name='search_blog_text_ve_fb62bc_gin'),
+                ),
+            ]
+    </code>
+</pre>
+
+We can see this initial migration creates our model and adds an index to <code class="prettyprint lang-py">'text_vector'</code> and <code class="prettyprint lang-py">'title_vector'</code>.
+
+<h2>Add Triggers</h2>
+
+Before we apply this migration we need to add a little something extra to it to sweeten the deal. We're going to add a trigger to automatically populate our vector fields so never have to worry about it again. The migration file will now look like this:
+
+<pre>
+    <code class="prettyprint lang-py">
+        import django.contrib.postgres.indexes
+        import django.contrib.postgres.search
+        from django.db import migrations, models
+
+        class Migration(migrations.Migration):
+
+            initial = True
+
+            dependencies = []
+
+            operations = [
+                migrations.CreateModel(
+                    name='Blog',
+                    fields=[
+                        ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                        ('title', models.TextField()),
+                        ('text', models.TextField()),
+                        ('title_vector', django.contrib.postgres.search.SearchVectorField(null=True)),
+                        ('text_vector', django.contrib.postgres.search.SearchVectorField(null=True)),
+                    ],
+                ),
+                migrations.AddIndex(
+                    model_name='blog',
+                    index=django.contrib.postgres.indexes.GinIndex(fields=['text_vector', 'title_vector'], name='search_blog_text_ve_fb62bc_gin'),
+                ),
+                migrations.RunSQL(
+                    '''
+                    CREATE TRIGGER title_vector_update BEFORE INSERT OR UPDATE
+                    ON search_blog FOR EACH ROW EXECUTE PROCEDURE
+                    tsvector_update_trigger('title_vector', 'pg_catalog.english', 'title');
+                    ''',
+                ),
+                migrations.RunSQL(
+                    '''
+                    CREATE TRIGGER text_vector_update BEFORE INSERT OR UPDATE
+                    ON search_blog FOR EACH ROW EXECUTE PROCEDURE
+                    tsvector_update_trigger('text_vector', 'pg_catalog.english', 'title');
+                    ''',
+                ),
+            ]
+    </code>
+</pre>
+
+We add a bit of SQL to populate the vector fields anytime a row in our blog table is inserted or updated. "tsvector" is the Postgres text search vector type, but we don't need to know too much more about it at this point other than that it will be the type of data stored in the two <code class="prettyprint lang-py">SearchVectorField</code>s in our model.
+
+<br/><br/>
+
+At this point we are ready to apply the migration. Again, my ins and outs:
+
+<pre>
+    <code class="prettyprint lang-sh">
+        rjauquet (master) → python manage.py migrate search
+        Operations to perform:
+            Apply all migrations: search
+        Running migrations:
+            Applying search.0001_initial... OK
+    </code>
+</pre>
         </div>
     </body>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
