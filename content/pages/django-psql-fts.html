@@ -49,4 +49,39 @@ Our new model looks like this:
     </code>
 </pre>
 
-You will note the "<span>null=</span><span>True</span>"
+You will note the "<code class="prettyprint lang-py">null=True</code>" kwarg passed into <code class="prettyprint lang-py">SearchVectorField</code>. We need to populate the vectors <i>after</i> their source fields have data in them, so we cannot create the vectors until after a Blog instance is saved. We will be adding a trigger later to automatically populate the vector fields, but first we need to set up a few more things.
+
+<h2>Enable indexing on vector fields</h2>
+
+We have two options for vector indexes in Postgres: <b>GIN</b> and <b>GiST</b>. It's worth reading <a href="https://www.postgresql.org/docs/current/static/textsearch-indexes.html">The Documentation</a> on the differences, but we're just going to go ahead and use <b>GIN</b> and not worry too much about the details.
+
+<br/><br/>
+
+Adding indexing to our vector fields is straightforward:
+
+<pre>
+    <code class="prettyprint lang-py">
+        from django.contrib.postgres.indexes import GinIndex
+        from django.contrib.postgres.search import SearchVectorField
+        from django.db import models
+
+        class Blog(models.Model):
+
+            title = models.TextField()
+            text = models.TextField()
+
+            title_vector = SearchVectorField(null=True)
+            text_vector = SearchVectorField(null=True)
+
+            class Meta:
+                indexes = [GinIndex(fields=[
+                    'text_vector',
+                    'title_vector',
+                ])]
+    </code>
+</pre>
+
+With the GinIndex in place, we have everything setup on the model that we will need, but we still need to reflect these changes in our database.
+
+<h2>Generate a New Migration</h2>
+
