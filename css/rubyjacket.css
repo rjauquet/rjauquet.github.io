@@ -11,23 +11,24 @@ a {
 	text-decoration: none;
 }
 a:link {
-	color: rgb(164, 255, 152);
+	color: rgb(106, 171, 255);
 }
 a:hover {
-	color: rgb(255, 173, 106);
+	color: rgb(255, 140, 184);
 }
 a:visited {
-	color: rgb(164, 255, 152);
+	color: rgb(106, 171, 255);
 }
 a:visited:hover {
-	color: rgb(255, 173, 106);
+	color: rgb(255, 140, 184);
 }
 h1 {
 	font-size: 40px;
-	color: rgb(255, 173, 106);
+	color: rgb(255, 140, 184);
 }
 h2 {
-	font-size: 32px;
+	font-size: 30px;
+	color: rgb(106, 171, 255);
 }
 
 pre code {

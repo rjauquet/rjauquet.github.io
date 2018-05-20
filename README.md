@@ -1,13 +1,23 @@
 # Rob Ervin Jauquet
 
+## install
+
+```bash
+pipenv install
+```
+
 ## run
 
-```python3
-python3 -m http.server
+Open two terminals:
+
+```bash
+pipenv run python -m http.server
 ```
 
-## build
-
-```python3
-python3 build.py
+```bash
+pipenv run watch.py
 ```
+
+## Build
+
+`watch.py` will build files automatically on change, but you can build the html files manually with `pipenv run python build.py`.

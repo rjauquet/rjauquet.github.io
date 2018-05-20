@@ -21,7 +21,7 @@
         <div class="content">
 <h1>Full Text Search in PostgreSQL is Good Enough</h3>
 
-Searching text is non-trivial, but for most use cases we can get 80% of the way there with a little Django + PostgreSQL magic. Our goal is to enable accurate and fast full text searching without setting up any new packages/databases/services/headaches besides our existing Django project with an existing PostgresQL database.
+Searching text is non-trivial, but for most use cases we can get 80% of the way there with a little Django + PostgreSQL magic. Our goal is to enable accurate and fast full text searching without setting up any new packages/databases/services/headaches besides our existing Django (2.x) project with an existing PostgreSQL (>=9.6) database.
 
 <br/><br/>
 
@@ -35,16 +35,10 @@ We're going to design a simple blog. First, a model:
 
             title = models.TextField()
             text = models.TextField()
-
-            author = models.ForeignKey('User')
     </code>
 </pre>
 
-Each blog post is stored in our Blog model with its title, text, and author. We don't need to worry about the User model.
-
-<br/><br/>
-
-Likely, you've already got a model with some text fields like the Blog model above. We're going to do a few things now:
+Each blog post is stored in our Blog model with its title and text. Likely, you've already got a model with some text fields like the Blog model above. We're going to do a few things now:
 
 <ul>
     <li>Add fields to store vectorized versions of title and text</li>
@@ -71,13 +65,12 @@ Our new model looks like this:
             title = models.TextField()
             text = models.TextField()
 
-            author = models.ForeignKey('User')
-
             title_vector = SearchVectorField(null=True)
             text_vector = SearchVectorField(null=True)
     </code>
 </pre>
 
+You will note the "<span>null=</span><span>True</span>"
         </div>
     </body>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>

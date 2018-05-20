@@ -6,7 +6,7 @@ BUILD_DIR = './build/'
 CONTENT_DIR = './content/pages/'
 INDEX_DIR = './'
 
-def main():
+def build():
     with open(TEMPLATE_FILE) as template_file:
         template = template_file.readlines()
 
@@ -36,4 +36,4 @@ def main():
             )
 
 if __name__ == '__main__':
-    main()
+    build()
