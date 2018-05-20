@@ -1,7 +1,8 @@
 html *
 {
-   font-family: lato !important;
+   font-family: Roboto Slab !important;
    font-size: 17px;
+   font-weight: light;
 }
 body {
 	margin: 0px 0px 0px 0px;
@@ -29,6 +30,10 @@ h1 {
 h2 {
 	font-size: 30px;
 	color: rgb(106, 171, 255);
+}
+h3 {
+	font-size: 22px;
+	color: rgb(255, 214, 81);
 }
 
 pre code {
@@ -148,7 +153,7 @@ pre .str, code .str { color: rgb(255, 140, 184); }
 pre .kwd, code .kwd { color: rgb(165, 165, 165); font-weight: bold }
 pre .com, code .com { color: #87ceeb }
 pre .typ, code .typ { color: #98fb98 }
-pre .lit, code .lit { color: #cd5c5c }
+pre .lit, code .lit { color: rgb(106, 171, 255); }
 pre .pun, code .pun { color: rgb(234, 255, 231) }
 pre .pln, code .pln { color: rgb(234, 255, 231) }
 pre .tag, code .tag { color: rgb(255, 152, 233); font-weight: bold }

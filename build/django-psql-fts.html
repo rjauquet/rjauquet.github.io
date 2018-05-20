@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <title>rubyjacket.com</title>
         <!-- CSS links -->
-        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato">
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto%20Slab">
         <link rel="stylesheet" type="text/css" href="/css/rubyjacket.css" />
     </head>
     <body>
@@ -21,7 +21,7 @@
         <div class="content">
 <h1>Full Text Search in PostgreSQL is Good Enough</h3>
 
-Searching text is non-trivial, but for most use cases we can get 80% of the way there with a little Django + PostgreSQL magic. Our goal is to enable accurate and fast full text searching without setting up any new packages/databases/services/headaches besides our existing Django (2.x) project with an existing PostgreSQL (>=9.6) database.
+Searching text is non-trivial, but for most use cases we can get 80% of the way there with a little <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/postgres/search/">Django + PostgreSQL</a> magic. Our goal is to enable accurate and fast full text searching without setting up any new packages, databases, services, headaches, etc. besides our existing Django (2.x) project with an existing PostgreSQL (>=9.6) database.
 
 <br/><br/>
 
@@ -45,6 +45,7 @@ Each blog post is stored in our Blog model with its title and text. Likely, you'
     <li>Enable indexing on our vectorized fields</li>
     <li>Generate a new migration file</li>
     <li>Add a trigger to automatically populate our vector fields</li>
+    <li>Explore searching with our newly enabled full text search</li>
 </ul>
 
 <h2>Add Vector Fields</h2>
@@ -115,10 +116,10 @@ Now that we've made our changes, we can make our migration file. My ins and outs
 <pre>
     <code class="prettyprint lang-sh">
         rjauquet (master) → python manage.py makemigrations search
-        Migrations for 'search':
-            examples/search/migrations/0001_initial.py
-            - Create model Blog
-            - Create index search_blog_text_ve_fb62bc_gin on field(s) text_vector, title_vector of model blog
+            Migrations for 'search':
+                examples/search/migrations/0001_initial.py
+                - Create model Blog
+                - Create index search_blog_text_ve_fb62bc_gin on field(s) text_vector, title_vector of model blog
     </code>
 </pre>
 
@@ -215,12 +216,132 @@ At this point we are ready to apply the migration. Again, my ins and outs:
 <pre>
     <code class="prettyprint lang-sh">
         rjauquet (master) → python manage.py migrate search
-        Operations to perform:
-            Apply all migrations: search
-        Running migrations:
-            Applying search.0001_initial... OK
+            Operations to perform:
+                Apply all migrations: search
+            Running migrations:
+                Applying search.0001_initial... OK
     </code>
 </pre>
+
+Our database and blog model are now both ready to handle full text searching!
+
+<h2>Searching</h2>
+
+So you'd probably like to actually search through some data now. This is also relatively easy, but first we need to add some Blog instances.
+
+<br/><br/>
+
+Run this to enter into the django shell (I'm using <a hhref="https://github.com/django-extensions/django-extensions">django-extensions</a> with <a hhref="https://ipython.org/">iPython</a>):
+
+<pre>
+    <code class="prettyprint lang-sh">
+        rjauquet (master) → python manage.py shell_plus --ipython
+    </code>
+</pre>
+
+If you're using extensions and ipython, everything will be imported and ready to go. Let's add some Blog instances to our database:
+
+<pre>
+    <code class="prettyprint lang-sh">
+        In [1]: Blog.objects.create(title="First Post", text="This is my first blog post. It's a good post.")
+        Out[1]: &lt;Blog: Blog object (1)&gt;
+
+        In [2]: Blog.objects.create(title="Second Post", text="This is not first blog post. It's a bad post.")
+        Out[2]: &lt;Blog: Blog object (2)&gt;
+    </code>
+</pre>
+
+Our vector fields and index will all be updated automatically. We're now ready to search through our blogs. Let's start with just the title:
+
+<pre>
+    <code class="prettyprint lang-sh">
+        In [1]: from django.contrib.postgres.search import SearchQuery, SearchRank
+
+        In [2]: results = Blog.objects.annotate(
+                rank=SearchRank(
+                    F('title_vector'),
+                    SearchQuery('first'),
+                )
+            )
+        In [3]: results = results.filter(
+                rank__gt=0.0,
+            ).order_by('-rank')
+
+        In [4]: results.count(), results.first().title, results.first().rank
+        Out[4]: (1, 'First Post', 0.0607927)
+    </code>
+</pre>
+
+Okay we've got a lot going on here already. Let's break it down by each input.
+
+<h3>In[1]: Import</h3>
+
+The first thing we're doing is importing the <code class="prettyprint lang-py">SearchQuery</code> and <code class="prettyprint lang-py">SearchRank</code> classes from the django+postgres tools.
+
+<br/><br/>
+
+<code class="prettyprint lang-py">SearchQuery</code> generates a postgres "tsquery" object from an input string. These can be logically combined as well, but we're going to keep it simple and just use one SearchQuery call.
+
+<br/><br/>
+
+<code class="prettyprint lang-py">SearchRank</code> performs a query on a <code class="prettyprint lang-py">SearchVector</code> with a <code class="prettyprint lang-py">SearchQuery</code> and calculates a rank. We want to do this for every row in our Blog table.
+
+<br/><br/>
+
+Take a look at the <a href="https://docs.djangoproject.com/en/2.0/ref/contrib/postgres/search/#searchquery">django docs</a> for more information on <code class="prettyprint lang-py">SearchQuery</code> and <code class="prettyprint lang-py">SearchRank</code>.
+
+<h3>In[2]: Annotate</h3>
+
+On our second step, we do the actual interesting work of assigning a rank value to every row in our Blog table. We're going to search for the word <code class="prettyprint lang-py">'first'</code> through the vector <code class="prettyprint lang-py">'title_vector'</code>.
+
+There is a tricky bit here. Normally <code class="prettyprint lang-py">SearchRank</code> takes a <code class="prettyprint lang-py">SearchVector</code> as its first argument, but we've luckily already told our database to build (and index!) our search vectors. All we need to do is tell Django to use our vector field instead of building a new <code class="prettyprint lang-py">SearchVector</code>; <code class="prettyprint lang-py">F('title_vector')</code> will do the trick.
+
+<h3>In[3]: Filter</h3>
+
+This part can be chained with the previous step, but I've separated it out so we can talk about is separately. We've already applied our annotation to assign each record a rank, so we can now filter our results down to just those records that have a score greater than zero. We of course also want to sort those results so the highest ranks appear first.
+
+<h3>In[4]: Result</h3>
+
+Of our two titles <code class="prettyprint lang-py">"First Post"</code> and <code class="prettyprint lang-py">"Second Post"</code>, only one had a rank greater than zero when searching with the word <code class="prettyprint lang-py">'first'</code>. The rank value is a bit hard to reason about out of context, but you can read about the algorithm used in <a href="https://www.postgresql.org/docs/10/static/textsearch-controls.html#TEXTSEARCH-RANKING">the Postgres docs</a>. You shouldn't really have to futz with it to start getting good-enough results.
+
+<br/><br/>
+
+<h2>Final Thoughts</h2>
+
+This is obviously a simplified example but hopefully it's enough ground work to build more complex queries. It would be good to add a bunch more Blog instances to start exploring what happens to the result set with different queries. For example, you can build two complex <code class="prettyprint lang-py">SearchQuery</code> objects, one for each vector on our model:
+
+<pre>
+    <code class="prettyprint lang-sh">
+        In[1]: from django.contrib.postgres.search import SearchQuery, SearchRank
+
+        In[2]: title_query = ~SearchQuery('first') & SearchQuery('post')
+
+        In[3]: text_query = SearchQuery('good') | SearchQuery('great')
+
+        In[4]: results = Blog.objects.annotate(
+                title_rank=SearchRank(
+                    F('title_vector'),
+                    title_query,
+                )
+            ).annotate(
+                text_rank=SearchRank(
+                    F('title_vector'),
+                    text_query,
+                )
+            ).annotate(
+                rank=F('title_rank') + F('text_rank')
+            ).filter(
+                title_rank__gt=0.0,
+                rank__gt=0.0,
+            ).order_by('-rank')
+    </code>
+</pre>
+
+This will give results that have the word <code class="prettyprint lang-py">'post'</code> but do not have the word <code class="prettyprint lang-py">'first'</code> in the title, and contain either <code class="prettyprint lang-py">'good'</code> or <code class="prettyprint lang-py">'great'</code> in the text. What fun.
+
+<br/><br/>
+
+Good luck! Feel free to send questions my way: <a href="mailto:rjauquet@gmail.com?subject=Django%20Full%20Text%20Search">rjauquet@gmail.com</a>
         </div>
     </body>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
