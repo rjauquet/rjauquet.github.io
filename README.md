@@ -3,7 +3,7 @@
 ## install
 
 ```bash
-pipenv install
+poetry install
 ```
 
 ## run
@@ -11,13 +11,13 @@ pipenv install
 Open two terminals:
 
 ```bash
-pipenv run python -m http.server
+poetry run python -m http.server
 ```
 
 ```bash
-pipenv run watch.py
+poetry run watch.py
 ```
 
 ## Build
 
-`watch.py` will build files automatically on change, but you can build the html files manually with `pipenv run python build.py`.
+`watch.py` will build files automatically on change, but you can build the html files manually with `poetry run python build.py`.
