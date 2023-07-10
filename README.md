@@ -15,7 +15,7 @@ poetry run python -m http.server
 ```
 
 ```bash
-poetry run watch.py
+poetry run python watch.py
 ```
 
 ## Build
